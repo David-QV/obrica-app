@@ -34,3 +34,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# database
+/database/*.db
+/database/*.db-wal
+/database/*.db-shm
+
+# claude
+/.claude/
+
+# temp
+/nul
