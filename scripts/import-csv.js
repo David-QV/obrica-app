@@ -84,6 +84,14 @@ function main() {
   db.pragma("journal_mode = WAL");
   db.pragma("foreign_keys = OFF"); // Temporarily disable for bulk import
 
+  // Check if data already exists
+  const materialCount = db.prepare("SELECT COUNT(*) as c FROM materiales").get();
+  if (materialCount.c > 0) {
+    console.log(`Ya existen ${materialCount.c} materiales en la BD, omitiendo importación.`);
+    db.close();
+    return;
+  }
+
   // Clear existing inventory data (order matters for foreign keys)
   console.log("Limpiando datos existentes...");
   db.exec("DELETE FROM inventario_historial");

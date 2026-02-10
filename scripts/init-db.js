@@ -12,10 +12,11 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
-// Eliminar base de datos existente si existe
+// Si la BD ya existe, no hacer nada
 if (fs.existsSync(dbPath)) {
-  fs.unlinkSync(dbPath);
-  console.log("Base de datos anterior eliminada");
+  console.log("Base de datos ya existe, omitiendo inicialización.");
+  console.log(`Ubicación: ${dbPath}`);
+  process.exit(0);
 }
 
 // Crear nueva base de datos
