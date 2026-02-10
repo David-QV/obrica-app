@@ -12,11 +12,22 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
-// Si la BD ya existe, no hacer nada
+// Si la BD ya existe Y tiene tablas, no hacer nada
 if (fs.existsSync(dbPath)) {
-  console.log("Base de datos ya existe, omitiendo inicialización.");
-  console.log(`Ubicación: ${dbPath}`);
-  process.exit(0);
+  const testDb = new Database(dbPath);
+  const tableCheck = testDb.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='usuarios'").get();
+  testDb.close();
+  if (tableCheck) {
+    console.log("Base de datos ya existe con esquema válido, omitiendo inicialización.");
+    console.log(`Ubicación: ${dbPath}`);
+    process.exit(0);
+  }
+  // BD existe pero sin esquema - eliminar y recrear
+  console.log("BD encontrada sin esquema válido, recreando...");
+  fs.unlinkSync(dbPath);
+  // Eliminar archivos WAL/SHM si existen
+  if (fs.existsSync(dbPath + "-wal")) fs.unlinkSync(dbPath + "-wal");
+  if (fs.existsSync(dbPath + "-shm")) fs.unlinkSync(dbPath + "-shm");
 }
 
 // Crear nueva base de datos
